@@ -5,6 +5,7 @@ from django.urls import reverse
 
 class User(models.Model):
     """Model representing a user."""
+    __tablename__ = 'user'
     username = models.CharField(max_length=50, help_text="Enter a username")
 
     class Meta:
@@ -19,7 +20,8 @@ class User(models.Model):
         return reverse('genre-detail', args=[str(self.id)])
 
 class Task(models.Model):
-    """Model representing a user."""
+    """Model representing a task."""
+    __tablename__ = 'task'
     task_name = models.CharField(max_length=50, help_text="Enter a task")
 
     class Meta:
@@ -34,7 +36,8 @@ class Task(models.Model):
         return reverse('genre-detail', args=[str(self.id)])
 
 class Reminder(models.Model):
-    """Model representing a user."""
+    """Model representing a reminder."""
+    __tablename__ = 'reminder'
     reminder_id = models.DateField(max_length=50, help_text="Enter a reminder")
 
     class Meta:
@@ -50,7 +53,8 @@ class Reminder(models.Model):
 
 
 class List(models.Model):
-    """Model representing a user."""
+    """Model representing a list."""
+    __tablename__ = 'list'
     list_id = models.CharField(max_length=50, help_text="Enter a list")
 
     class Meta:
@@ -65,7 +69,8 @@ class List(models.Model):
         return reverse('genre-detail', args=[str(self.id)])
 
 class ListEntry(models.Model):
-    """Model representing a user."""
+    """Model representing a list entry."""
+    __tablename__ = 'listEntry'
     listentry_id = models.CharField(max_length=50, help_text="Enter a list entry")
 
     class Meta:
@@ -81,7 +86,8 @@ class ListEntry(models.Model):
 
 
 class SharedList(models.Model):
-    """Model representing a user."""
+    """Model representing a shared list."""
+    __tablename__ = 'sharedList'
     sharedlist_id = models.CharField(max_length=50, help_text="Enter a shared list")
 
     class Meta:
@@ -97,7 +103,8 @@ class SharedList(models.Model):
 
 
 class Group(models.Model):
-    """Model representing a user."""
+    """Model representing a group."""
+    __tablename__ = 'group'
     group_id = models.CharField(max_length=50, help_text="Enter a group")
 
     class Meta:
@@ -112,7 +119,8 @@ class Group(models.Model):
         return reverse('genre-detail', args=[str(self.id)])
 
 class GroupEntry(models.Model):
-    """Model representing a user."""
+    """Model representing a group entry."""
+    __tablename__ = 'groupEntry'
     groupentry_id = models.CharField(max_length=50, help_text="Enter a group entry")
 
     class Meta:
