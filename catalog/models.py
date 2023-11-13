@@ -25,11 +25,17 @@ class Task(models.Model):
         ('d', 'Done'),
     )
 
+    TASK_PRIORITY = (
+        ('l', 'Low'),
+        ('m', 'Medium'),
+        ('h', 'High')
+    )
+
     task_id = models.IntegerField(primary_key=True)
     task_name = models.CharField(max_length=200)
     note = models.TextField()
     file = models.FileField()
-    priority = models.IntegerField()
+    priority = models.CharField(max_length=1, choices=TASK_PRIORITY, help_text='Task priority')
     deadline = models.DateTimeField(null = True)
     status = models.CharField(max_length=1, choices=TASK_STATUS, default='t', help_text='Task status')
 
