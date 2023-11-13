@@ -33,10 +33,10 @@ class Task(models.Model):
 
     task_id = models.IntegerField(primary_key=True)
     task_name = models.CharField(max_length=200)
-    note = models.TextField()
-    file = models.FileField()
-    priority = models.CharField(max_length=1, choices=TASK_PRIORITY, help_text='Task priority')
-    deadline = models.DateTimeField(null = True)
+    note = models.TextField(blank = True)
+    file = models.FileField(blank = True)
+    priority = models.CharField(max_length=1, choices=TASK_PRIORITY, blank = True, help_text='Task priority')
+    deadline = models.DateTimeField(null = True, blank = True)
     status = models.CharField(max_length=1, choices=TASK_STATUS, default='t', help_text='Task status')
 
     class Meta:
