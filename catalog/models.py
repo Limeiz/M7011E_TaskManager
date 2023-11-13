@@ -1,135 +1,123 @@
 from django.db import models
 from django.urls import reverse
 
-# Create your models here.
-
 class User(models.Model):
-    """Model representing a user."""
-    __tablename__ = 'user'
-    username = models.CharField(max_length=50, help_text="Enter a username")
-
-    class Meta:
-        ordering = ["username"]
+    __tablename__ = 'User'
+    user_id = models.IntegerField(primary_key=True)
+    username = models.CharField(max_length=200)
+    password = models.CharField(max_length=200)
+    email = models.EmailField()
+    is_admin = models.BooleanField(default=False)
+    is_logged_in = models.BooleanField(default=False)
 
     def __str__(self):
-        """String for representing the Model object."""
         return self.username
 
     def get_absolute_url(self):
-        """Returns the url to access a particular username instance."""
-        return reverse('genre-detail', args=[str(self.id)])
+        return reverse('user-detail', args=[str(self.id)])
 
 class Task(models.Model):
-    """Model representing a task."""
-    __tablename__ = 'task'
-    task_name = models.CharField(max_length=50, help_text="Enter a task")
+    __tablename__ = 'Task'
+
+    TASK_STATUS = (
+        ('t', 'To do'),
+        ('i', 'In progress'),
+        ('d', 'Done'),
+    )
+
+    task_id = models.IntegerField(primary_key=True)
+    task_name = models.CharField(max_length=200)
+    note = models.TextField()
+    file = models.FileField()
+    priority = models.IntegerField()
+    deadline = models.DateTimeField(null = True)
+    status = models.CharField(max_length=1, choices=TASK_STATUS, default='t', help_text='Task status')
 
     class Meta:
-        ordering = ["task name"]
-
+        ordering = ['priority']
     def __str__(self):
-        """String for representing the Model object."""
         return self.task_name
 
     def get_absolute_url(self):
-        """Returns the url to access a particular username instance."""
-        return reverse('genre-detail', args=[str(self.id)])
+        return reverse('task-detail', args=[str(self.id)])
 
 class Reminder(models.Model):
-    """Model representing a reminder."""
-    __tablename__ = 'reminder'
-    reminder_id = models.DateField(max_length=50, help_text="Enter a reminder")
+    __tablename__ = 'Reminder'
+    reminder_id = models.IntegerField(primary_key=True)
+    date = models.DateTimeField()
+    task_id = models.ForeignKey(Task, on_delete=models.RESTRICT)
+    user_id = models.ForeignKey(User, on_delete=models.RESTRICT)
 
     class Meta:
-        ordering = ["reminder_id"]
+        ordering = ["date"]
 
     def __str__(self):
-        """String for representing the Model object."""
         return self.reminder_id
 
     def get_absolute_url(self):
-        """Returns the url to access a particular username instance."""
-        return reverse('genre-detail', args=[str(self.id)])
+        return reverse('reminder-detail', args=[str(self.id)])
 
 
 class List(models.Model):
-    """Model representing a list."""
-    __tablename__ = 'list'
-    list_id = models.CharField(max_length=50, help_text="Enter a list")
-
-    class Meta:
-        ordering = ["list_id"]
+    __tablename__ = 'List'
+    list_id = models.IntegerField(primary_key=True)
+    user_id = models.ForeignKey(User, on_delete=models.RESTRICT)
 
     def __str__(self):
-        """String for representing the Model object."""
         return self.list_id
 
     def get_absolute_url(self):
-        """Returns the url to access a particular username instance."""
-        return reverse('genre-detail', args=[str(self.id)])
+        return reverse('list-detail', args=[str(self.id)])
 
 class ListEntry(models.Model):
     """Model representing a list entry."""
-    __tablename__ = 'listEntry'
-    listentry_id = models.CharField(max_length=50, help_text="Enter a list entry")
-
-    class Meta:
-        ordering = ["listentry_id"]
+    __tablename__ = 'ListEntry'
+    listentry_id = models.IntegerField(primary_key=True)
+    task_id = models.ForeignKey(Task, on_delete=models.RESTRICT)
+    list_id = models.ForeignKey(List, on_delete=models.RESTRICT)
 
     def __str__(self):
-        """String for representing the Model object."""
         return self.listentry_id
 
     def get_absolute_url(self):
-        """Returns the url to access a particular username instance."""
-        return reverse('genre-detail', args=[str(self.id)])
-
-
-class SharedList(models.Model):
-    """Model representing a shared list."""
-    __tablename__ = 'sharedList'
-    sharedlist_id = models.CharField(max_length=50, help_text="Enter a shared list")
-
-    class Meta:
-        ordering = ["sharedlist_id"]
-
-    def __str__(self):
-        """String for representing the Model object."""
-        return self.sharedlist_id
-
-    def get_absolute_url(self):
-        """Returns the url to access a particular username instance."""
-        return reverse('genre-detail', args=[str(self.id)])
-
+        return reverse('listentry-detail', args=[str(self.id)])
 
 class Group(models.Model):
-    """Model representing a group."""
-    __tablename__ = 'group'
-    group_id = models.CharField(max_length=50, help_text="Enter a group")
-
+    __tablename__ = 'Group'
+    group_id = models.IntegerField(primary_key=True)
+    group_name = models.CharField(max_length=200)
     class Meta:
-        ordering = ["group_id"]
+        ordering = ["group_name"]
 
     def __str__(self):
-        """String for representing the Model object."""
         return self.group_id
 
     def get_absolute_url(self):
-        """Returns the url to access a particular username instance."""
-        return reverse('genre-detail', args=[str(self.id)])
+        return reverse('group-detail', args=[str(self.id)])
 
 class GroupEntry(models.Model):
-    """Model representing a group entry."""
-    __tablename__ = 'groupEntry'
-    groupentry_id = models.CharField(max_length=50, help_text="Enter a group entry")
-
-    class Meta:
-        ordering = ["groupentry_id"]
+    __tablename__ = 'GroupEntry'
+    groupentry_id = models.IntegerField(primary_key=True)
+    user_id = models.ForeignKey(User, on_delete=models.RESTRICT)
+    group_id = models.ForeignKey(Group, on_delete=models.RESTRICT)
 
     def __str__(self):
-        """String for representing the Model object."""
         return self.groupentry_id
 
     def get_absolute_url(self):
-        """Returns the url to access a particular username instance."""
-        return reverse('genre-detail', args=[str(self.id)])
+        return reverse('groupentry-detail', args=[str(self.id)])
+
+
+class SharedList(models.Model):
+    __tablename__ = 'SharedList'
+    sharedlist_id = models.IntegerField(primary_key=True)
+    group_id = models.ForeignKey(Group, on_delete=models.RESTRICT)
+    list_id = models.ForeignKey(List, on_delete=models.RESTRICT)
+
+    def __str__(self):
+        return self.sharedlist_id
+
+    def get_absolute_url(self):
+        return reverse('sharedList-detail', args=[str(self.id)])
+
+
