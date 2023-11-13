@@ -70,7 +70,7 @@ class Reminder(models.Model):
 
 class List(models.Model):
     __tablename__ = 'List'
-    list_id = models.IntegerField(primary_key=True)
+    list_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(User, on_delete=models.RESTRICT)
 
     def __str__(self):
@@ -83,7 +83,7 @@ class List(models.Model):
 class ListEntry(models.Model):
     """Model representing a list entry."""
     __tablename__ = 'ListEntry'
-    listentry_id = models.IntegerField(primary_key=True)
+    listentry_id = models.AutoField(primary_key=True)
     task_id = models.ForeignKey(Task, on_delete=models.RESTRICT)
     list_id = models.ForeignKey(List, on_delete=models.RESTRICT)
 
@@ -96,7 +96,7 @@ class ListEntry(models.Model):
 
 class Group(models.Model):
     __tablename__ = 'Group'
-    group_id = models.IntegerField(primary_key=True)
+    group_id = models.AutoField(primary_key=True)
     group_name = models.CharField(max_length=200)
 
     class Meta:
@@ -111,7 +111,7 @@ class Group(models.Model):
 
 class GroupEntry(models.Model):
     __tablename__ = 'GroupEntry'
-    groupentry_id = models.IntegerField(primary_key=True)
+    groupentry_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(User, on_delete=models.RESTRICT)
     group_id = models.ForeignKey(Group, on_delete=models.RESTRICT)
 
@@ -124,7 +124,7 @@ class GroupEntry(models.Model):
 
 class SharedList(models.Model):
     __tablename__ = 'SharedList'
-    sharedlist_id = models.IntegerField(primary_key=True)
+    sharedlist_id = models.AutoField(primary_key=True)
     group_id = models.ForeignKey(Group, on_delete=models.RESTRICT)
     list_id = models.ForeignKey(List, on_delete=models.RESTRICT)
 
