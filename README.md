@@ -40,11 +40,11 @@ Before you begin, ensure you have the following installed:
 3. Apply database migrations:
     ```bash
       python3 manage.py makemigrations
-      python manage.py migrate
+      python3 manage.py migrate
     ```
 4. Run the development server:
     ```bash
-    python manage.py runserver
+      python3 manage.py runserver
     ```
 Visit http://localhost:8000/ in your browser to access the application.
 
