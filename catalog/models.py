@@ -1,9 +1,10 @@
 from django.db import models
 from django.urls import reverse
 
+
 class User(models.Model):
     __tablename__ = 'User'
-    user_id = models.IntegerField(primary_key=True)
+    user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=200)
     password = models.CharField(max_length=200)
     email = models.EmailField()
@@ -15,6 +16,7 @@ class User(models.Model):
 
     def get_absolute_url(self):
         return reverse('user-detail', args=[str(self.id)])
+
 
 class Task(models.Model):
     __tablename__ = 'Task'
@@ -31,25 +33,27 @@ class Task(models.Model):
         ('h', 'High')
     )
 
-    task_id = models.IntegerField(primary_key=True)
+    task_id = models.AutoField(primary_key=True)
     task_name = models.CharField(max_length=200)
-    note = models.TextField(blank = True)
-    file = models.FileField(blank = True)
-    priority = models.CharField(max_length=1, choices=TASK_PRIORITY, blank = True, help_text='Task priority')
-    deadline = models.DateTimeField(null = True, blank = True)
+    note = models.TextField(blank=True)
+    file = models.FileField(blank=True)
+    priority = models.CharField(max_length=1, choices=TASK_PRIORITY, blank=True, help_text='Task priority')
+    deadline = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=1, choices=TASK_STATUS, default='t', help_text='Task status')
 
     class Meta:
         ordering = ['priority']
+
     def __str__(self):
         return self.task_name
 
     def get_absolute_url(self):
         return reverse('task-detail', args=[str(self.id)])
 
+
 class Reminder(models.Model):
     __tablename__ = 'Reminder'
-    reminder_id = models.IntegerField(primary_key=True)
+    reminder_id = models.AutoField(primary_key=True)
     date = models.DateTimeField()
     task_id = models.ForeignKey(Task, on_delete=models.RESTRICT)
     user_id = models.ForeignKey(User, on_delete=models.RESTRICT)
@@ -66,7 +70,7 @@ class Reminder(models.Model):
 
 class List(models.Model):
     __tablename__ = 'List'
-    list_id = models.IntegerField(primary_key=True)
+    list_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(User, on_delete=models.RESTRICT)
 
     def __str__(self):
@@ -75,10 +79,11 @@ class List(models.Model):
     def get_absolute_url(self):
         return reverse('list-detail', args=[str(self.id)])
 
+
 class ListEntry(models.Model):
     """Model representing a list entry."""
     __tablename__ = 'ListEntry'
-    listentry_id = models.IntegerField(primary_key=True)
+    listentry_id = models.AutoField(primary_key=True)
     task_id = models.ForeignKey(Task, on_delete=models.RESTRICT)
     list_id = models.ForeignKey(List, on_delete=models.RESTRICT)
 
@@ -88,10 +93,12 @@ class ListEntry(models.Model):
     def get_absolute_url(self):
         return reverse('listentry-detail', args=[str(self.id)])
 
+
 class Group(models.Model):
     __tablename__ = 'Group'
-    group_id = models.IntegerField(primary_key=True)
+    group_id = models.AutoField(primary_key=True)
     group_name = models.CharField(max_length=200)
+
     class Meta:
         ordering = ["group_name"]
 
@@ -101,9 +108,10 @@ class Group(models.Model):
     def get_absolute_url(self):
         return reverse('group-detail', args=[str(self.id)])
 
+
 class GroupEntry(models.Model):
     __tablename__ = 'GroupEntry'
-    groupentry_id = models.IntegerField(primary_key=True)
+    groupentry_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(User, on_delete=models.RESTRICT)
     group_id = models.ForeignKey(Group, on_delete=models.RESTRICT)
 
@@ -116,7 +124,7 @@ class GroupEntry(models.Model):
 
 class SharedList(models.Model):
     __tablename__ = 'SharedList'
-    sharedlist_id = models.IntegerField(primary_key=True)
+    sharedlist_id = models.AutoField(primary_key=True)
     group_id = models.ForeignKey(Group, on_delete=models.RESTRICT)
     list_id = models.ForeignKey(List, on_delete=models.RESTRICT)
 
@@ -125,5 +133,3 @@ class SharedList(models.Model):
 
     def get_absolute_url(self):
         return reverse('sharedList-detail', args=[str(self.id)])
-
-
