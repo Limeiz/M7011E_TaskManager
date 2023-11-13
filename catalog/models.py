@@ -4,11 +4,18 @@ from django.urls import reverse
 
 class User(models.Model):
     __tablename__ = 'User'
+
+    USER_TYPES = (
+        ('u', 'User'),
+        ('a', 'Admin'),
+        ('s', 'Super User'),
+    )
+
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=200)
     password = models.CharField(max_length=200)
     email = models.EmailField()
-    is_admin = models.BooleanField(default=False)
+    user_type = models.CharField(max_length=1, choices=USER_TYPES, default='u')
     is_logged_in = models.BooleanField(default=False)
 
     def __str__(self):
