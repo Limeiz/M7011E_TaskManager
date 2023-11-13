@@ -31,21 +31,21 @@ Before you begin, ensure you have the following installed:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/task-management-system.git
-   cd task-management-system
+     git clone git@github.com:Limeiz/M7011E_TaskManager.git
+     cd M7011E_TaskManager
 2. Install dependencies:
-
- ```bash
-  pip install -r requirements.txt
-```
+    ```bash
+      pip install -r requirements.txt
+    ```
 3. Apply database migrations:
-```bash
-  python manage.py migrate
-```
+    ```bash
+      python3 manage.py makemigrations
+      python manage.py migrate
+    ```
 4. Run the development server:
-```bash
-python manage.py runserver
-```
+    ```bash
+    python manage.py runserver
+    ```
 Visit http://localhost:8000/ in your browser to access the application.
 
 ## Usage
