@@ -40,7 +40,7 @@ class Task(models.Model):
     )
 
     task_id = models.AutoField(primary_key=True)
-    task_name = models.CharField(max_length=200, unique=True)
+    task_name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     file = models.FileField(blank=True)
     priority = models.CharField(max_length=1, choices=TASK_PRIORITY, blank=True, help_text='Task priority')
@@ -61,7 +61,7 @@ class Reminder(models.Model):
     __tablename__ = 'Reminder'
     reminder_id = models.AutoField(primary_key=True)
     date = models.DateTimeField()
-    task_name = models.ForeignKey(Task, to_field='task_name', on_delete=models.RESTRICT)
+    task_name = models.ForeignKey(Task, to_field='task_id', on_delete=models.RESTRICT)
     user_name = models.ForeignKey(User, to_field='username', on_delete=models.RESTRICT)
 
     class Meta:
@@ -76,8 +76,9 @@ class Reminder(models.Model):
 class List(models.Model):
     __tablename__ = 'List'
     list_id = models.AutoField(primary_key=True)
-    list_name = models.CharField(max_length=200, unique=True)
+    list_name = models.CharField(max_length=200)
     assigned_users = models.ManyToManyField(User)
+    assigned_tasks = models.ManyToManyField(Task)
 
     def __str__(self):
         return f"{self.list_name}"
@@ -85,16 +86,3 @@ class List(models.Model):
     def get_absolute_url(self):
         return reverse('list-detail', args=[str(self.id)])
 
-
-class ListEntry(models.Model):
-    """Model representing a list entry."""
-    __tablename__ = 'ListEntry'
-    listentry_id = models.AutoField(primary_key=True)
-    assigned_tasks = models.ManyToManyField(Task)
-    list_name = models.ForeignKey(List, to_field='list_name', on_delete=models.RESTRICT)
-
-    def __str__(self):
-        return f"{self.listentry_id}"
-
-    def get_absolute_url(self):
-        return reverse('listentry-detail', args=[str(self.id)])
