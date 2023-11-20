@@ -3,8 +3,8 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import UserSerializer, TaskSerializer, ReminderSerializer
-from .models import User, Task, Reminder
+from .serializers import UserSerializer, TaskSerializer, ReminderSerializer, ListSerializer
+from .models import User, Task, Reminder, List
 
 
 class UserViewSet(viewsets.ViewSet):
@@ -95,3 +95,34 @@ class ReminderViewSet(viewsets.ViewSet):
         reminder = Reminder.objects.get(reminder_id=pk)
         reminder.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ListViewSet(viewsets.ViewSet):
+    def list(self, request):  # /api/lists
+        lists = List.objects.all()
+        serializer = ListSerializer(lists, many=True)
+        return Response(serializer.data)
+
+    def create(self, request):
+        serializer = ListSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def retrieve(self, request, pk=None):  # /api/lists/<str:id>
+        list = List.objects.get(list_id=pk)
+        serializer = ListSerializer(list)
+        return Response(serializer.data)
+
+    def update(self, request, pk=None):
+        list = List.objects.get(list_id=pk)
+        serializer = ListSerializer(instance=list, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+    def destroy(self, request, pk=None):
+        list = List.objects.get(list_id=pk)
+        list.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+

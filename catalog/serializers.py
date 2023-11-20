@@ -22,9 +22,13 @@ class ReminderSerializer(serializers.ModelSerializer):
         model = Reminder
         fields = ['task_id', 'username', 'date']
 
+class UserUsernameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username']
 
 class ListSerializer(serializers.ModelSerializer):
-    assigned_users = UserSerializer(many=True)
+    assigned_users = UserUsernameSerializer(many=True)
     assigned_tasks = TaskSerializer(many=True)
 
     class Meta:
