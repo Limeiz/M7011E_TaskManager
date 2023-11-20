@@ -2,7 +2,6 @@ from django.db import models
 from django.urls import reverse
 
 class User(models.Model):
-    __tablename__ = 'User'
 
     USER_TYPES = (
         ('u', 'User'),
@@ -20,12 +19,9 @@ class User(models.Model):
     def __str__(self):
         return f"{self.username}"
 
-    def get_absolute_url(self):
-        return reverse('user-detail', args=[str(self.id)])
 
 
 class Task(models.Model):
-    __tablename__ = 'Task'
 
     TASK_STATUS = (
         ('t', 'To do'),
@@ -53,16 +49,12 @@ class Task(models.Model):
     def __str__(self):
         return f"{self.task_name}"
 
-    def get_absolute_url(self):
-        return reverse('task-detail', args=[str(self.id)])
-
 
 class Reminder(models.Model):
-    __tablename__ = 'Reminder'
     reminder_id = models.AutoField(primary_key=True)
     date = models.DateTimeField()
-    task_name = models.ForeignKey(Task, to_field='task_id', on_delete=models.RESTRICT)
-    user_name = models.ForeignKey(User, to_field='username', on_delete=models.RESTRICT)
+    task_id = models.ForeignKey(Task, to_field='task_id', on_delete=models.RESTRICT)
+    username = models.ForeignKey(User, to_field='username', on_delete=models.RESTRICT)
 
     class Meta:
         ordering = ["date"]
@@ -70,11 +62,8 @@ class Reminder(models.Model):
     def __str__(self):
         return f"{self.reminder_id}"
 
-    def get_absolute_url(self):
-        return reverse('reminder-detail', args=[str(self.id)])
 
 class List(models.Model):
-    __tablename__ = 'List'
     list_id = models.AutoField(primary_key=True)
     list_name = models.CharField(max_length=200)
     assigned_users = models.ManyToManyField(User)
@@ -83,6 +72,5 @@ class List(models.Model):
     def __str__(self):
         return f"{self.list_name}"
 
-    def get_absolute_url(self):
-        return reverse('list-detail', args=[str(self.id)])
+
 
