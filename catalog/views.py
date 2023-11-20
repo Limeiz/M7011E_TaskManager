@@ -1,3 +1,97 @@
 from django.shortcuts import render
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-# Create your views here.
+from .serializers import UserSerializer, TaskSerializer, ReminderSerializer
+from .models import User, Task, Reminder
+
+
+class UserViewSet(viewsets.ViewSet):
+    def list(self, request):  # /api/users
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+    def create(self, request):
+        serializer = UserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def retrieve(self, request, pk=None):  # /api/users/<str:id>
+        user = User.objects.get(user_id=pk)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+    def update(self, request, pk=None):
+        user = User.objects.get(user_id=pk)
+        serializer = UserSerializer(instance=user, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+    def destroy(self, request, pk=None):
+        user = User.objects.get(user_id=pk)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class TaskViewSet(viewsets.ViewSet):
+    def list(self, request):  # /api/tasks
+        tasks = Task.objects.all()
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)
+
+    def create(self, request):
+        serializer = TaskSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def retrieve(self, request, pk=None):  # /api/tasks/<str:id>
+        task = Task.objects.get(task_id=pk)
+        serializer = TaskSerializer(task)
+        return Response(serializer.data)
+
+    def update(self, request, pk=None):
+        task = Task.objects.get(task_id=pk)
+        serializer = TaskSerializer(instance=task, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+    def destroy(self, request, pk=None):
+        task = Task.objects.get(task_id=pk)
+        task.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ReminderViewSet(viewsets.ViewSet):
+    def list(self, request):  # /api/reminders
+        reminders = Reminder.objects.all()
+        serializer = ReminderSerializer(reminders, many=True)
+        return Response(serializer.data)
+
+    def create(self, request):
+        serializer = ReminderSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def retrieve(self, request, pk=None):  # /api/reminders/<str:id>
+        reminder = Reminder.objects.get(reminder_id=pk)
+        serializer = ReminderSerializer(reminder)
+        return Response(serializer.data)
+
+    def update(self, request, pk=None):
+        reminder = Reminder.objects.get(reminder_id=pk)
+        serializer = ReminderSerializer(instance=reminder, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+    def destroy(self, request, pk=None):
+        reminder = Reminder.objects.get(reminder_id=pk)
+        reminder.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
