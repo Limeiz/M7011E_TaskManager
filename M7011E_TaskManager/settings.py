@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "catalog.apps.CatalogConfig",
     "rest_framework",
     "rest_framework.authtoken",
-    "drf_spectacular",
+    #"drf_spectacular",
 ]
 
 MIDDLEWARE = [

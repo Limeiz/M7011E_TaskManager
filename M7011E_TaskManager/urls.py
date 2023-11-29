@@ -17,7 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+from catalog import views
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include('catalog.urls'))
+    #path('api/tasks/<slug:slug>/', views.TaskViewSet.as_view, name='task_details')
 ]

@@ -1,8 +1,9 @@
 from django.db import models
 from django.urls import reverse
+from django.utils.text import slugify
+
 
 class User(models.Model):
-
     USER_TYPES = (
         ('u', 'User'),
         ('a', 'Admin'),
@@ -20,9 +21,7 @@ class User(models.Model):
         return f"{self.username}"
 
 
-
 class Task(models.Model):
-
     TASK_STATUS = (
         ('t', 'To do'),
         ('i', 'In progress'),
@@ -42,6 +41,8 @@ class Task(models.Model):
     priority = models.CharField(max_length=1, choices=TASK_PRIORITY, blank=True, help_text='Task priority')
     deadline = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=1, choices=TASK_STATUS, default='t', help_text='Task status')
+
+    # slug = models.SlugField(max_length=255, unique=True, blank=False, null=True)
 
     class Meta:
         ordering = ['priority']
@@ -72,5 +73,8 @@ class List(models.Model):
     def __str__(self):
         return f"{self.list_name}"
 
+    def is_assigned_users(self, user):
+        return user in self.assigned_users.all()
 
-
+    def is_assigned_task(self, task):
+        return task in self.assigned_tasks.all()
