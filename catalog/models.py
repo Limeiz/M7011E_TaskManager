@@ -73,4 +73,9 @@ class List(models.Model):
         return f"{self.list_name}"
 
 
+    def is_assigned_users(self, user):
+        return user in self.assigned_users.all()
 
+
+    def is_assigned_task(self, task):
+        return task in self.assigned_tasks.all()
