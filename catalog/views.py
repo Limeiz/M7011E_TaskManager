@@ -1,8 +1,6 @@
-from django.shortcuts import render
 from rest_framework import viewsets, status, permissions, authentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from .serializers import UserSerializer, TaskSerializer, ReminderSerializer, ListSerializer
 from .models import User, Task, Reminder, List
 
@@ -11,8 +9,7 @@ class IsAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
         group_name = "Admin"
         return request.user.groups.filter(name=group_name).exists()
-#Token c21d62f284a3c47ed9b176e6c81c76cdded4dd5f
-#Admin Token 85f6b629fd2f2d34dffb8e399f8931a38b57c88d
+
 class UserViewSet(viewsets.ViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
@@ -46,6 +43,8 @@ class UserViewSet(viewsets.ViewSet):
 
 
 class TaskViewSet(viewsets.ViewSet):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
     def list(self, request):  # /api/tasks
         tasks = Task.objects.all()
         serializer = TaskSerializer(tasks, many=True)
@@ -76,6 +75,8 @@ class TaskViewSet(viewsets.ViewSet):
 
 
 class ReminderViewSet(viewsets.ViewSet):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
     def list(self, request):  # /api/reminders
         reminders = Reminder.objects.all()
         serializer = ReminderSerializer(reminders, many=True)
@@ -106,6 +107,8 @@ class ReminderViewSet(viewsets.ViewSet):
 
 
 class ListViewSet(viewsets.ViewSet):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
     def list(self, request):  # /api/lists
         lists = List.objects.all()
         serializer = ListSerializer(lists, many=True)
