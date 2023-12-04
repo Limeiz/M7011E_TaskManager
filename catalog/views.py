@@ -2,7 +2,8 @@ from rest_framework import viewsets, status, permissions, authentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, TaskSerializer, ListSerializer, ReminderSerializer
-from .models import User, Task, List, Reminder
+from .models import Task, List, Reminder
+from django.contrib.auth.models import User
 
 
 class IsAdmin(permissions.BasePermission):
@@ -19,7 +20,7 @@ class IsRegularUser:
         group_name = "RegularUser"
         return request.user.groups.filter(name=group_name).exists()
 
-class TaskFunctions():
+class CheckFunctions():
     def get_all_user_tasks(self, user):
         lists = List.objects.filter(assigned_users=user)
         all_user_tasks = Task.objects.none()
@@ -31,11 +32,18 @@ class TaskFunctions():
         return all_user_tasks.order_by('task_id')
 
     def user_has_task(self, user, task):
-        if task in TaskFunctions.get_all_user_tasks(self, user):
+        if task in CheckFunctions.get_all_user_tasks(self, user):
             return True
         else:
             return False
-class UserAdminView(viewsets.ViewSet):
+
+    def user_has_reminder(self, user, reminder_id):
+        reminder = Reminder.objects.get(reminder_id=reminder_id)
+        if reminder.username == user:
+            return True
+        else:
+            return False
+class UserAdminViewSet(viewsets.ViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
 
@@ -52,7 +60,6 @@ class UserAdminView(viewsets.ViewSet):
 
 class UserViewSet(viewsets.ViewSet):
     authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated, IsAdmin]
 
     def create(self, request):
         serializer = UserSerializer(data=request.data)
@@ -117,7 +124,7 @@ class TaskUserViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated, IsRegularUser]
 
     def list(self, request):  # /api/usertasks
-        all_user_tasks = TaskFunctions.get_all_user_tasks(self, request.user)
+        all_user_tasks = CheckFunctions.get_all_user_tasks(self, request.user)
         serializer = TaskSerializer(all_user_tasks, many=True)
         return Response(serializer.data)
 
@@ -129,7 +136,7 @@ class TaskUserViewSet(viewsets.ViewSet):
 
     def retrieve(self, request, pk=None):  # /api/usertasks/<str:id>
         task = Task.objects.get(task_id=pk)
-        if TaskFunctions.user_has_task(self, request.user, task):
+        if CheckFunctions.user_has_task(self, request.user, task):
             serializer = TaskSerializer(task)
             return Response(serializer.data)
         else:
@@ -138,7 +145,7 @@ class TaskUserViewSet(viewsets.ViewSet):
 
     def update(self, request, pk=None):
         task = Task.objects.get(task_id=pk)
-        if TaskFunctions.user_has_task(self, request.user, task):
+        if CheckFunctions.user_has_task(self, request.user, task):
             serializer = TaskSerializer(instance=task, data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
@@ -149,7 +156,7 @@ class TaskUserViewSet(viewsets.ViewSet):
 
     def destroy(self, request, pk=None):
         task = Task.objects.get(task_id=pk)
-        if TaskFunctions.user_has_task(self, request.user, task):
+        if CheckFunctions.user_has_task(self, request.user, task):
             task.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
@@ -157,7 +164,7 @@ class TaskUserViewSet(viewsets.ViewSet):
             return Response(message, status=status.HTTP_204_NO_CONTENT)
 
 
-class ReminderViewSet(viewsets.ViewSet):
+class ReminderAdminViewSet(viewsets.ViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
 
@@ -188,6 +195,44 @@ class ReminderViewSet(viewsets.ViewSet):
      reminder = Reminder.objects.get(reminder_id=pk)
      reminder.delete()
      return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ReminderViewSet(viewsets.ViewSet):
+    authentication_classes = [authentication.TokenAuthentication]
+    def create(self, request):
+     serializer = ReminderSerializer(data=request.data)
+     serializer.is_valid(raise_exception=True)
+     serializer.save()
+     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def retrieve(self, request, pk=None):  # /api/reminders/<str:id>
+        if CheckFunctions.user_has_reminder(self, request.user, pk):
+         reminder = Reminder.objects.get(reminder_id=pk)
+         serializer = ReminderSerializer(reminder)
+         return Response(serializer.data)
+        else:
+            message = "You can't view this reminder"
+            return Response(message, status=status.HTTP_204_NO_CONTENT)
+
+
+    def update(self, request, pk=None):
+        if CheckFunctions.user_has_reminder(self, request.user, pk):
+         reminder = Reminder.objects.get(reminder_id=pk)
+         serializer = ReminderSerializer(instance=reminder, data=request.data)
+         serializer.is_valid(raise_exception=True)
+         serializer.save()
+         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        else:
+            message = "You can't update this reminder"
+            return Response(message, status=status.HTTP_204_NO_CONTENT)
+
+    def destroy(self, request, pk=None):
+        if CheckFunctions.user_has_reminder(self, request.user, pk):
+         reminder = Reminder.objects.get(reminder_id=pk)
+         reminder.delete()
+         return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            message = "You can't delete this reminder"
+            return Response(message, status=status.HTTP_204_NO_CONTENT)
 
 
 class ListViewSet(viewsets.ViewSet):
