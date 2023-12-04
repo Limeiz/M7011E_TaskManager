@@ -1,10 +1,7 @@
 from django.contrib import admin
-from .models import User, Task, Reminder, List
+from .models import Task, List, Reminder
 
 
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ('user_id', 'username', 'email', 'is_logged_in')
 
 
 @admin.register(Task)
