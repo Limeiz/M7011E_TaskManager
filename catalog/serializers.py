@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Task, Reminder, List
+from .models import User, Task, List, Reminder
 
 
 class UserSerializer(serializers.ModelSerializer):

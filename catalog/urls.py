@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 
-from .views import UserViewSet, TaskViewSet, ReminderViewSet, ListViewSet
+from .views import UserViewSet, TaskUserViewSet, TaskAdminViewSet, ListViewSet, ReminderViewSet
 
 urlpatterns = [
     path('users', UserViewSet.as_view({
@@ -13,11 +13,20 @@ urlpatterns = [
         'put': 'update',
         'delete': 'destroy'
     })),
-    path('tasks', TaskViewSet.as_view({
+    path('tasks', TaskAdminViewSet.as_view({
         'get': 'list',
         'post': 'create'
     })),
-    path('tasks/<str:pk>', TaskViewSet.as_view({
+    path('tasks/<str:pk>', TaskAdminViewSet.as_view({
+        'get': 'retrieve',
+        'put': 'update',
+        'delete': 'destroy'
+    })),
+    path('usertasks', TaskUserViewSet.as_view({
+        'get': 'list',
+        'post': 'create'
+    })),
+    path('usertasks/<str:pk>', TaskUserViewSet.as_view({
         'get': 'retrieve',
         'put': 'update',
         'delete': 'destroy'

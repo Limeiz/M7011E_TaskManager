@@ -49,7 +49,7 @@ class AuthTokenSerializer(serializers.Serializer):
         user = authenticate(
             request=self.context.get('request'),
             username=username,
-            password=password,
+            password=password
         )
         if not user:
             msg = _('Unable to authenticate with provided credentials.')
