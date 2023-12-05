@@ -13,12 +13,14 @@ class IsAdmin(permissions.BasePermission):
         group_name = "Admin"
         return request.user.groups.filter(name=group_name).exists()
 
+
 class IsRegularUser:
     message = "You are not authorized."
 
     def has_permission(self, request, view):
         group_name = "RegularUser"
         return request.user.groups.filter(name=group_name).exists()
+
 
 class CheckFunctions():
     def get_all_user_tasks(self, user):
@@ -43,6 +45,8 @@ class CheckFunctions():
             return True
         else:
             return False
+
+
 class UserAdminViewSet(viewsets.ViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
@@ -118,7 +122,6 @@ class TaskAdminViewSet(viewsets.ViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-
 class TaskUserViewSet(viewsets.ViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated, IsRegularUser]
@@ -169,67 +172,68 @@ class ReminderAdminViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
 
     def list(self, request):  # /api/reminders
-     reminders = Reminder.objects.all()
-     serializer = ReminderSerializer(reminders, many=True)
-     return Response(serializer.data)
+        reminders = Reminder.objects.all()
+        serializer = ReminderSerializer(reminders, many=True)
+        return Response(serializer.data)
 
     def create(self, request):
-     serializer = ReminderSerializer(data=request.data)
-     serializer.is_valid(raise_exception=True)
-     serializer.save()
-     return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = ReminderSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, pk=None):  # /api/reminders/<str:id>
-     reminder = Reminder.objects.get(reminder_id=pk)
-     serializer = ReminderSerializer(reminder)
-     return Response(serializer.data)
+        reminder = Reminder.objects.get(reminder_id=pk)
+        serializer = ReminderSerializer(reminder)
+        return Response(serializer.data)
 
     def update(self, request, pk=None):
-     reminder = Reminder.objects.get(reminder_id=pk)
-     serializer = ReminderSerializer(instance=reminder, data=request.data)
-     serializer.is_valid(raise_exception=True)
-     serializer.save()
-     return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        reminder = Reminder.objects.get(reminder_id=pk)
+        serializer = ReminderSerializer(instance=reminder, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
     def destroy(self, request, pk=None):
-     reminder = Reminder.objects.get(reminder_id=pk)
-     reminder.delete()
-     return Response(status=status.HTTP_204_NO_CONTENT)
+        reminder = Reminder.objects.get(reminder_id=pk)
+        reminder.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class ReminderViewSet(viewsets.ViewSet):
     authentication_classes = [authentication.TokenAuthentication]
+
     def create(self, request):
-     serializer = ReminderSerializer(data=request.data)
-     serializer.is_valid(raise_exception=True)
-     serializer.save()
-     return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = ReminderSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, pk=None):  # /api/reminders/<str:id>
         if CheckFunctions.user_has_reminder(self, request.user, pk):
-         reminder = Reminder.objects.get(reminder_id=pk)
-         serializer = ReminderSerializer(reminder)
-         return Response(serializer.data)
+            reminder = Reminder.objects.get(reminder_id=pk)
+            serializer = ReminderSerializer(reminder)
+            return Response(serializer.data)
         else:
             message = "You can't view this reminder"
             return Response(message, status=status.HTTP_204_NO_CONTENT)
 
-
     def update(self, request, pk=None):
         if CheckFunctions.user_has_reminder(self, request.user, pk):
-         reminder = Reminder.objects.get(reminder_id=pk)
-         serializer = ReminderSerializer(instance=reminder, data=request.data)
-         serializer.is_valid(raise_exception=True)
-         serializer.save()
-         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+            reminder = Reminder.objects.get(reminder_id=pk)
+            serializer = ReminderSerializer(instance=reminder, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         else:
             message = "You can't update this reminder"
             return Response(message, status=status.HTTP_204_NO_CONTENT)
 
     def destroy(self, request, pk=None):
         if CheckFunctions.user_has_reminder(self, request.user, pk):
-         reminder = Reminder.objects.get(reminder_id=pk)
-         reminder.delete()
-         return Response(status=status.HTTP_204_NO_CONTENT)
+            reminder = Reminder.objects.get(reminder_id=pk)
+            reminder.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             message = "You can't delete this reminder"
             return Response(message, status=status.HTTP_204_NO_CONTENT)

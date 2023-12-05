@@ -15,17 +15,19 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class ReminderSerializer(serializers.ModelSerializer):
-    #task = TaskSerializer()
-    #user = UserSerializer()
+    # task = TaskSerializer()
+    # user = UserSerializer()
 
     class Meta:
         model = Reminder
         fields = ['task_id', 'username', 'date']
 
+
 class UserUsernameSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username']
+
 
 class ListSerializer(serializers.ModelSerializer):
     assigned_users = UserUsernameSerializer(many=True)
