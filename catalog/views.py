@@ -1,6 +1,5 @@
 from rest_framework import viewsets, status, permissions, authentication
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from .serializers import UserSerializer, TaskSerializer, ListSerializer, ReminderSerializer
 from .models import Task, List, Reminder
 from django.contrib.auth.models import User
