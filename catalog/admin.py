@@ -1,7 +1,5 @@
 from django.contrib import admin
-from .models import Task, List, Reminder
-
-
+from .models import Task, List, Reminder, Achievement
 
 
 @admin.register(Task)
@@ -27,3 +25,8 @@ class ListAdmin(admin.ModelAdmin):
         return ', '.join([f"{task.task_name}" for task in obj.assigned_tasks.all()])
 
     assigned_tasks_display.short_description = 'Assigned Tasks'
+
+
+@admin.register(Achievement)
+class AchievementAdmin(admin.ModelAdmin):
+    list_display = ('achievement_id', 'name', 'description')

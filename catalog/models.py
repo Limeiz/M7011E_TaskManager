@@ -1,6 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import User
-from django.urls import reverse
+from django.db import models
 
 
 class Task(models.Model):
@@ -35,7 +34,7 @@ class Reminder(models.Model):
     reminder_id = models.AutoField(primary_key=True)
     date = models.DateTimeField()
     task_id = models.ForeignKey(Task, to_field='task_id', on_delete=models.RESTRICT)
-    username = models.ForeignKey(User, on_delete=models.RESTRICT)
+    username = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["date"]
@@ -62,3 +61,13 @@ class List(models.Model):
     def get_user_tasks(self, user):
         if user in self.assigned_users.all():
             return self.assigned_tasks.all()
+
+
+class Achievement(models.Model):
+    achievement_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=200)
+    description = models.TextField()
+    completed_by = models.ManyToManyField(User, related_name='achievements')
+
+    def __str__(self):
+        return self.name
