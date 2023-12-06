@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Task, List, Reminder
+from .models import User, Task, List, Reminder, Achievement
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -35,4 +35,10 @@ class ListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = List
+        fields = '__all__'
+
+
+class AchievementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Achievement
         fields = '__all__'

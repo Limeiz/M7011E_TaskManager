@@ -1,8 +1,9 @@
+from django.contrib.auth.models import User
 from rest_framework import viewsets, status, permissions, authentication
 from rest_framework.response import Response
-from .serializers import UserSerializer, TaskSerializer, ListSerializer, ReminderSerializer
+
 from .models import Task, List, Reminder
-from django.contrib.auth.models import User
+from .serializers import UserSerializer, TaskSerializer, ListSerializer, ReminderSerializer
 
 
 class IsAdmin(permissions.BasePermission):
@@ -50,41 +51,68 @@ class UserAdminViewSet(viewsets.ViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
 
+    # This is not the way
+    # def create(self, request):
+    #     serializer = UserSerializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #
+    #     create_user_url = reverse('user:create')
+    #
+    #     data = {'username': serializer.data['username'], 'password': serializer.data['password']}
+    #     response = Request.post(f'http://127.0.0.1:8000/api/v1/{create_user_url}', data=data)
+    #
+    #     if response.status_code == status.HTTP_201_CREATED:
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     else:
+    #         return Response({'error': 'Failed to create user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     def list(self, request):  # /api/users
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):  # /api/users/<str:id>
-        user = User.objects.get(user_id=pk)
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
-
-
-class UserViewSet(viewsets.ViewSet):
-    authentication_classes = [authentication.TokenAuthentication]
-
-    def create(self, request):
-        serializer = UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def retrieve(self, request, pk=None):  # /api/users/<str:id>
-        user = User.objects.get(user_id=pk)
+        user = User.objects.get(id=pk)
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
     def update(self, request, pk=None):
-        user = User.objects.get(user_id=pk)
+        user = User.objects.get(id=pk)
         serializer = UserSerializer(instance=user, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
     def destroy(self, request, pk=None):
-        user = User.objects.get(user_id=pk)
+        user = User.objects.get(id=pk)
         user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CreateUserViewSet(viewsets.ViewSet):
+    def create(self, request):
+        serializer = UserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class UserViewSet(viewsets.ViewSet):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def retrieve(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+    def update(self, request):
+        serializer = UserSerializer(instance=request.user, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+    def destroy(self, request):
+        request.user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
