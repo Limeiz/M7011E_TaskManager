@@ -17,6 +17,7 @@ Welcome to your personal task management system! This system allows you to manag
 - Set deadlines and reminders for tasks
 - Join and manage groups for collaborative task management
 - Customize task priorities
+- Earn achievements for completing tasks!
 
 ## Getting Started
 
