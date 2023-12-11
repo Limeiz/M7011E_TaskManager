@@ -8,11 +8,10 @@ from catalog.models import Reminder
 
 class ReminderRegularUserTestCase(APITestCase):
 
-
     def setUp(self):
         self.client = APIClient()
         self.reg_user = User.objects.create_user(username='testUser',
-                                                   password='testpass123')
+                                                 password='testpass123')
         self.token = Token.objects.create(user=self.reg_user)
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
 
@@ -31,4 +30,3 @@ class ReminderRegularUserTestCase(APITestCase):
     def test_regular_user_get_update_delete(self):
         response = self.client.get(reverse('reminder_admin_details'), args=[str(self.reminder.slug)])
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-

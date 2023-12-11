@@ -10,7 +10,7 @@ class TaskAdminTestCase(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.reg_user = User.objects.create_user(username='testUser',
-                                                   password='testpass123')
+                                                 password='testpass123')
         self.token = Token.objects.create(user=self.reg_user)
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
 
@@ -19,10 +19,10 @@ class TaskAdminTestCase(APITestCase):
         self.group.save()
         self.reg_user.groups.add(self.group)
         self.task = Task.objects.create(task_name='Test Task', priority='l', status='t', slug='test-task')
-        self.other_users_task = Task.objects.create(task_name='Secret Task', priority='l', status='t', slug='secret-task')
+        self.other_users_task = Task.objects.create(task_name='Secret Task', priority='l', status='t',
+                                                    slug='secret-task')
 
         self.client.force_authenticate(user=self.reg_user)
-
 
     def test_get_task(self):
         response = self.client.get(reverse('task_user_details', args=[str(self.task.slug)]))

@@ -22,7 +22,6 @@ class TaskAdminTestCase(APITestCase):
 
         self.client.force_authenticate(user=self.admin_user)
 
-
     def test_get_task(self):
         response = self.client.get(reverse('task_admin_details', args=[str(self.task.slug)]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
