@@ -18,9 +18,12 @@ class TaskAdminTestCase(APITestCase):
         self.group = Group(name=group_name)
         self.group.save()
         self.reg_user.groups.add(self.group)
-        self.task = Task.objects.create(task_name='Test Task', priority='l', status='t', slug='test-task')
+        self.task = Task.objects.create(task_name='Test Task', priority='l', status='t', slug='test-task', assignee=self.reg_user)
+
+        self.other_user = User.objects.create_user(username='otherUser',
+                                                 password='test2pass123')
         self.other_users_task = Task.objects.create(task_name='Secret Task', priority='l', status='t',
-                                                    slug='secret-task')
+                                                    slug='secret-task', assignee=self.other_user)
 
         self.client.force_authenticate(user=self.reg_user)
 
