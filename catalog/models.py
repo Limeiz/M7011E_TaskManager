@@ -24,7 +24,7 @@ class Task(models.Model):
     priority = models.CharField(max_length=1, choices=TASK_PRIORITY, blank=True, help_text='Task priority')
     deadline = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=1, choices=TASK_STATUS, default='t', help_text='Task status')
-    assignee = models.ForeignKey(User, on_delete=models.CASCADE)
+    assignee = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     slug = models.SlugField(max_length=255,
                             unique=True,
                             blank=False,
