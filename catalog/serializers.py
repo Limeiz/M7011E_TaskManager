@@ -9,18 +9,37 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    task_slug = serializers.SlugRelatedField(
+        read_only=True,
+        source='task',
+        slug_field='slug'
+    )
+
+    task = serializers.HyperlinkedRelatedField(
+        view_name='task:task_admin_details',
+        read_only=True,
+        lookup_field='slug'
+    )
     class Meta:
         model = Task
-        fields = ['task_name', 'description', 'file', 'priority', 'deadline', 'status']
+        fields = ['task_name', 'description', 'file', 'priority', 'deadline', 'status', 'slug', 'task_slug', 'task', 'assignee']
 
 
 class ReminderSerializer(serializers.ModelSerializer):
-    # task = TaskSerializer()
-    # user = UserSerializer()
+    reminder_slug = serializers.SlugRelatedField(
+        read_only=True,
+        source='reminder',
+        slug_field='slug'
+    )
 
+    reminder = serializers.HyperlinkedRelatedField(
+        view_name='reminder:reminder_admin_details',
+        read_only=True,
+        lookup_field='slug'
+    )
     class Meta:
         model = Reminder
-        fields = ['task_id', 'username', 'date']
+        fields = ['task_id', 'username', 'date', 'slug', 'reminder_slug', 'reminder']
 
 
 class UserUsernameSerializer(serializers.ModelSerializer):
@@ -33,9 +52,21 @@ class ListSerializer(serializers.ModelSerializer):
     assigned_users = UserUsernameSerializer(many=True)
     assigned_tasks = TaskSerializer(many=True)
 
+    list_slug = serializers.SlugRelatedField(
+        read_only=True,
+        source='list',
+        slug_field='slug'
+    )
+
+    list = serializers.HyperlinkedRelatedField(
+        view_name='list:list_admin_details',
+        read_only=True,
+        lookup_field='slug'
+    )
+
     class Meta:
         model = List
-        fields = '__all__'
+        fields = 'list_name', 'slug', 'list_slug', 'list', 'assigned_users', 'assigned_tasks'
 
 
 class AchievementSerializer(serializers.ModelSerializer):

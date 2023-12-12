@@ -18,13 +18,24 @@ class Task(models.Model):
     task_id = models.AutoField(primary_key=True)
     task_name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    file = models.FileField(blank=True)
+    file = models.FileField(upload_to='files/',
+                                  null=True,
+                                  blank=True)
     priority = models.CharField(max_length=1, choices=TASK_PRIORITY, blank=True, help_text='Task priority')
     deadline = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=1, choices=TASK_STATUS, default='t', help_text='Task status')
+    assignee = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    slug = models.SlugField(max_length=255,
+                            unique=True,
+                            blank=False,
+                            null=True)
 
     class Meta:
         ordering = ['priority']
+
+    def delete(self, *args, **kwargs):
+        self.file.delete()
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         return f"{self.task_name}"
@@ -35,6 +46,10 @@ class Reminder(models.Model):
     date = models.DateTimeField()
     task_id = models.ForeignKey(Task, to_field='task_id', on_delete=models.RESTRICT)
     username = models.ForeignKey(User, on_delete=models.CASCADE)
+    slug = models.SlugField(max_length=255,
+                            unique=True,
+                            blank=False,
+                            null=True)
 
     class Meta:
         ordering = ["date"]
@@ -48,6 +63,10 @@ class List(models.Model):
     list_name = models.CharField(max_length=200)
     assigned_users = models.ManyToManyField(User)
     assigned_tasks = models.ManyToManyField(Task)
+    slug = models.SlugField(max_length=255,
+                            unique=True,
+                            blank=False,
+                            null=True)
 
     def __str__(self):
         return f"{self.list_name}"

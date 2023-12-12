@@ -1,10 +1,9 @@
 from django.contrib.auth.models import User
-from rest_framework import viewsets, status, permissions, authentication
+from rest_framework import viewsets, status, permissions, authentication, generics
 from rest_framework.response import Response
 
 from .models import Task, List, Reminder
 from .serializers import UserSerializer, TaskSerializer, ListSerializer, ReminderSerializer
-
 
 class IsAdmin(permissions.BasePermission):
     message = "You have to be an admin to view this content."
@@ -14,7 +13,7 @@ class IsAdmin(permissions.BasePermission):
         return request.user.groups.filter(name=group_name).exists()
 
 
-class IsRegularUser:
+class IsRegularUser(permissions.BasePermission):
     message = "You are not authorized."
 
     def has_permission(self, request, view):
@@ -50,21 +49,6 @@ class CheckFunctions():
 class UserAdminViewSet(viewsets.ViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
-
-    # This is not the way
-    # def create(self, request):
-    #     serializer = UserSerializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #
-    #     create_user_url = reverse('user:create')
-    #
-    #     data = {'username': serializer.data['username'], 'password': serializer.data['password']}
-    #     response = Request.post(f'http://127.0.0.1:8000/api/v1/{create_user_url}', data=data)
-    #
-    #     if response.status_code == status.HTTP_201_CREATED:
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     else:
-    #         return Response({'error': 'Failed to create user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def list(self, request):  # /api/users
         users = User.objects.all()
@@ -115,185 +99,74 @@ class UserViewSet(viewsets.ViewSet):
         request.user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-class TaskAdminViewSet(viewsets.ViewSet):
+class TaskViewSet(generics.GenericAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
     authentication_classes = [authentication.TokenAuthentication]
+
+class TaskAdminListCreate(TaskViewSet, generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
 
-    def list(self, request):  # /api/tasks
-        tasks = Task.objects.all()
-        serializer = TaskSerializer(tasks, many=True)
-        return Response(serializer.data)
+class TaskAdminGetUpdateDelete(TaskViewSet, generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    lookup_field = 'slug'
 
-    def retrieve(self, request, pk=None):  # /api/tasks/<str:id>
-        task = Task.objects.get(task_id=pk)
-        serializer = TaskSerializer(task)
-        return Response(serializer.data)
+class TaskUserListCreate(TaskViewSet, generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsRegularUser]
+    def get_queryset(self):
+        return Task.objects.filter(assignee=self.request.user)
 
-    def create(self, request):
-        serializer = TaskSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+class TaskUserGetUpdateDelete(TaskViewSet, generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsRegularUser]
+    lookup_field = 'slug'
 
-    def update(self, request, pk=None):
-        task = Task.objects.get(task_id=pk)
-        serializer = TaskSerializer(instance=task, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+    def get_queryset(self):
+        return Task.objects.filter(assignee=self.request.user)
 
-    def destroy(self, request, pk=None):
-        task = Task.objects.get(task_id=pk)
-        task.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class TaskUserViewSet(viewsets.ViewSet):
+class ReminderViewSet(generics.GenericAPIView):
+    queryset = Reminder.objects.all()
+    serializer_class = ReminderSerializer
     authentication_classes = [authentication.TokenAuthentication]
+
+class ReminderAdminListCreate(ReminderViewSet, generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+class ReminderAdminGetUpdateDelete(ReminderViewSet, generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    lookup_field = 'slug'
+
+class ReminderUserListCreate(ReminderViewSet, generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsRegularUser]
 
-    def list(self, request):  # /api/usertasks
-        all_user_tasks = CheckFunctions.get_all_user_tasks(self, request.user)
-        serializer = TaskSerializer(all_user_tasks, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        return Reminder.objects.filter(username=self.request.user)
+class ReminderUserGetUpdateDelete(ReminderViewSet, generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsRegularUser]
+    lookup_field = 'slug'
 
-    def create(self, request):
-        serializer = TaskSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def retrieve(self, request, pk=None):  # /api/usertasks/<str:id>
-        task = Task.objects.get(task_id=pk)
-        if CheckFunctions.user_has_task(self, request.user, task):
-            serializer = TaskSerializer(task)
-            return Response(serializer.data)
-        else:
-            message = "You can't view this task."
-            return Response(message, status=status.HTTP_204_NO_CONTENT)
-
-    def update(self, request, pk=None):
-        task = Task.objects.get(task_id=pk)
-        if CheckFunctions.user_has_task(self, request.user, task):
-            serializer = TaskSerializer(instance=task, data=request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        else:
-            message = "You can't change this task."
-            return Response(message, status=status.HTTP_204_NO_CONTENT)
-
-    def destroy(self, request, pk=None):
-        task = Task.objects.get(task_id=pk)
-        if CheckFunctions.user_has_task(self, request.user, task):
-            task.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            message = "You can't delete this task."
-            return Response(message, status=status.HTTP_204_NO_CONTENT)
+    def get_queryset(self):
+        return Reminder.objects.filter(username=self.request.user)
 
 
-class ReminderAdminViewSet(viewsets.ViewSet):
+class ListViewSet(generics.GenericAPIView):
+    queryset = List.objects.all()
+    serializer_class = ListSerializer
     authentication_classes = [authentication.TokenAuthentication]
+class ListAdminListCreate(ListViewSet, generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
-
-    def list(self, request):  # /api/reminders
-        reminders = Reminder.objects.all()
-        serializer = ReminderSerializer(reminders, many=True)
-        return Response(serializer.data)
-
-    def create(self, request):
-        serializer = ReminderSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def retrieve(self, request, pk=None):  # /api/reminders/<str:id>
-        reminder = Reminder.objects.get(reminder_id=pk)
-        serializer = ReminderSerializer(reminder)
-        return Response(serializer.data)
-
-    def update(self, request, pk=None):
-        reminder = Reminder.objects.get(reminder_id=pk)
-        serializer = ReminderSerializer(instance=reminder, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-
-    def destroy(self, request, pk=None):
-        reminder = Reminder.objects.get(reminder_id=pk)
-        reminder.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class ReminderViewSet(viewsets.ViewSet):
-    authentication_classes = [authentication.TokenAuthentication]
-
-    def create(self, request):
-        serializer = ReminderSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def retrieve(self, request, pk=None):  # /api/reminders/<str:id>
-        if CheckFunctions.user_has_reminder(self, request.user, pk):
-            reminder = Reminder.objects.get(reminder_id=pk)
-            serializer = ReminderSerializer(reminder)
-            return Response(serializer.data)
-        else:
-            message = "You can't view this reminder"
-            return Response(message, status=status.HTTP_204_NO_CONTENT)
-
-    def update(self, request, pk=None):
-        if CheckFunctions.user_has_reminder(self, request.user, pk):
-            reminder = Reminder.objects.get(reminder_id=pk)
-            serializer = ReminderSerializer(instance=reminder, data=request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        else:
-            message = "You can't update this reminder"
-            return Response(message, status=status.HTTP_204_NO_CONTENT)
-
-    def destroy(self, request, pk=None):
-        if CheckFunctions.user_has_reminder(self, request.user, pk):
-            reminder = Reminder.objects.get(reminder_id=pk)
-            reminder.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            message = "You can't delete this reminder"
-            return Response(message, status=status.HTTP_204_NO_CONTENT)
-
-
-class ListViewSet(viewsets.ViewSet):
-    authentication_classes = [authentication.TokenAuthentication]
+class ListAdminGetUpdateDelete(ListViewSet, generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    lookup_field = 'slug'
 
-    def list(self, request):  # /api/lists
-        lists = List.objects.all()
-        serializer = ListSerializer(lists, many=True)
-        return Response(serializer.data)
+class ListUserListCreate(ListViewSet, generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsRegularUser]
 
-    def create(self, request):
-        serializer = ListSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def get_queryset(self):
+        return List.objects.filter(assigned_users=self.request.user)
 
-    def retrieve(self, request, pk=None):  # /api/lists/<str:id>
-        list = List.objects.get(list_id=pk)
-        serializer = ListSerializer(list)
-        return Response(serializer.data)
+class ListUserGetUpdateDelete(ListViewSet, generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsRegularUser]
+    lookup_field = 'slug'
 
-    def update(self, request, pk=None):
-        list = List.objects.get(list_id=pk)
-        serializer = ListSerializer(instance=list, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-
-    def destroy(self, request, pk=None):
-        list = List.objects.get(list_id=pk)
-        list.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def get_queryset(self):
+        return List.objects.filter(assigned_users=self.request.user)
