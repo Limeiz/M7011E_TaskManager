@@ -21,14 +21,19 @@ class ReminderAdminTestCase(APITestCase):
         self.group.save()
         self.admin_user.groups.add(self.group)
 
-        self.task = Task.objects.create(task_name='Test Task', priority='l', status='t', slug='test-task',
+        self.task = Task.objects.create(task_name='Test Task', priority='l',
+                                        status='t', slug='test-task',
                                         assignee=self.admin_user)
-        self.reminder = Reminder.objects.create(username=self.admin_user, task_id=self.task, slug='test-reminder', date=datetime.now())
+        self.reminder = Reminder.objects.create(username=self.admin_user,
+                                                task_id=self.task,
+                                                slug='test-reminder',
+                                                date=datetime.now())
 
     def test_admin_list_create(self):
         response = self.client.get(reverse('reminder_admin_list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_admin_get_update_delete(self):
-        response = self.client.get(reverse('reminder_admin_details', args=[str(self.reminder.slug)]))
+        response = self.client.get(
+            reverse('reminder_admin_details', args=[str(self.reminder.slug)]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
