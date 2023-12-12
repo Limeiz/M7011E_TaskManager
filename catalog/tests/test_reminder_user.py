@@ -21,9 +21,13 @@ class ReminderRegularUserTestCase(APITestCase):
         self.group = Group(name=group_name)
         self.group.save()
         self.reg_user.groups.add(self.group)
-        self.task = Task.objects.create(task_name='Test Task', priority='l', status='t', slug='test-task',
+        self.task = Task.objects.create(task_name='Test Task', priority='l',
+                                        status='t', slug='test-task',
                                         assignee=self.reg_user)
-        self.reminder = Reminder.objects.create(username=self.reg_user, task_id=self.task, slug='test-reminder', date=datetime.now())
+        self.reminder = Reminder.objects.create(username=self.reg_user,
+                                                task_id=self.task,
+                                                slug='test-reminder',
+                                                date=datetime.now())
 
         self.client.force_authenticate(user=self.reg_user)
 
@@ -32,6 +36,6 @@ class ReminderRegularUserTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_regular_user_get_update_delete(self):
-        response = self.client.get(reverse('reminder_user_details', args=[str(self.reminder.slug)]))
+        response = self.client.get(
+            reverse('reminder_user_details', args=[str(self.reminder.slug)]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-

@@ -19,12 +19,15 @@ class Task(models.Model):
     task_name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     file = models.FileField(upload_to='files/',
-                                  null=True,
-                                  blank=True)
-    priority = models.CharField(max_length=1, choices=TASK_PRIORITY, blank=True, help_text='Task priority')
+                            null=True,
+                            blank=True)
+    priority = models.CharField(max_length=1, choices=TASK_PRIORITY,
+                                blank=True, help_text='Task priority')
     deadline = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=1, choices=TASK_STATUS, default='t', help_text='Task status')
-    assignee = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    status = models.CharField(max_length=1, choices=TASK_STATUS, default='t',
+                              help_text='Task status')
+    assignee = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,
+                                 blank=True)
     slug = models.SlugField(max_length=255,
                             unique=True,
                             blank=False,
@@ -44,7 +47,8 @@ class Task(models.Model):
 class Reminder(models.Model):
     reminder_id = models.AutoField(primary_key=True)
     date = models.DateTimeField()
-    task_id = models.ForeignKey(Task, to_field='task_id', on_delete=models.RESTRICT)
+    task_id = models.ForeignKey(Task, to_field='task_id',
+                                on_delete=models.RESTRICT)
     username = models.ForeignKey(User, on_delete=models.CASCADE)
     slug = models.SlugField(max_length=255,
                             unique=True,

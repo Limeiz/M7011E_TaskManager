@@ -20,9 +20,11 @@ class TaskSerializer(serializers.ModelSerializer):
         read_only=True,
         lookup_field='slug'
     )
+
     class Meta:
         model = Task
-        fields = ['task_name', 'description', 'file', 'priority', 'deadline', 'status', 'slug', 'task_slug', 'task', 'assignee']
+        fields = ['task_name', 'description', 'file', 'priority', 'deadline',
+                  'status', 'slug', 'task_slug', 'task', 'assignee']
 
 
 class ReminderSerializer(serializers.ModelSerializer):
@@ -37,9 +39,11 @@ class ReminderSerializer(serializers.ModelSerializer):
         read_only=True,
         lookup_field='slug'
     )
+
     class Meta:
         model = Reminder
-        fields = ['task_id', 'username', 'date', 'slug', 'reminder_slug', 'reminder']
+        fields = ['task_id', 'username', 'date', 'slug', 'reminder_slug',
+                  'reminder']
 
 
 class UserUsernameSerializer(serializers.ModelSerializer):
@@ -66,7 +70,8 @@ class ListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = List
-        fields = 'list_name', 'slug', 'list_slug', 'list', 'assigned_users', 'assigned_tasks'
+        fields = ('list_name', 'slug', 'list_slug', 'list', 'assigned_users',
+                  'assigned_tasks')
 
 
 class AchievementSerializer(serializers.ModelSerializer):
