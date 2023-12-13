@@ -7,6 +7,7 @@ from rest_framework.test import APITestCase, APIClient
 from catalog.models import Task, List
 
 
+
 class ListUserTestCase(APITestCase):
     def setUp(self):
         self.client = APIClient()
@@ -99,3 +100,4 @@ class ListUserTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(List.objects.filter(slug='existing-list',
                                             assigned_users=other_user).exists())
+

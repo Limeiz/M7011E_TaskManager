@@ -43,6 +43,7 @@ class TaskAdminTestCase(APITestCase):
             str(self.other_users_task.slug)]))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+
     def test_update_task(self):
         new_task_name = 'Updated Task'
         response = self.client.patch(

@@ -49,5 +49,4 @@ urlpatterns = [
     path('list-user', ListUserListCreate.as_view(), name='list_user_list'),
     path('list-user/<slug:slug>', ListUserGetUpdateDelete.as_view(),
          name='list_user_details'),
-
 ]

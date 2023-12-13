@@ -34,15 +34,18 @@ class ReminderRegularUserTestCase(APITestCase):
         self.task2 = Task.objects.create(task_name='Test Task 2', priority='l',
                                          status='t', slug='test-task2',
                                          assignee=self.other_user)
+
         self.reminder = Reminder.objects.create(username=self.reg_user,
                                                 task_id=self.task,
                                                 slug='test-reminder',
                                                 date=datetime.now())
+
         self.other_user_reminder = Reminder.objects.create(
             username=self.other_user,
             task_id=self.task2,
             slug='other-reminder',
             date=datetime.now())
+
 
         self.client.force_authenticate(user=self.reg_user)
 
@@ -80,3 +83,4 @@ class ReminderRegularUserTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertTrue(
             Reminder.objects.filter(slug='other-reminder').exists())
+

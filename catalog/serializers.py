@@ -71,7 +71,8 @@ class ListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = List
-        fields = 'list_name', 'slug', 'list_slug', 'list', 'assigned_users', 'assigned_tasks'
+        fields = ('list_name', 'slug', 'list_slug', 'list', 'assigned_users',
+                  'assigned_tasks')
 
 
 class AchievementSerializer(serializers.ModelSerializer):
