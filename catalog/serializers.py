@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from .models import User, Task, List, Reminder, Achievement
 
 
@@ -20,9 +21,11 @@ class TaskSerializer(serializers.ModelSerializer):
         read_only=True,
         lookup_field='slug'
     )
+
     class Meta:
         model = Task
-        fields = ['task_name', 'description', 'file', 'priority', 'deadline', 'status', 'slug', 'task_slug', 'task', 'assignee']
+        fields = ['task_name', 'description', 'file', 'priority', 'deadline',
+                  'status', 'slug', 'task_slug', 'task', 'assignee']
 
 
 class ReminderSerializer(serializers.ModelSerializer):
@@ -37,9 +40,11 @@ class ReminderSerializer(serializers.ModelSerializer):
         read_only=True,
         lookup_field='slug'
     )
+
     class Meta:
         model = Reminder
-        fields = ['task_id', 'username', 'date', 'slug', 'reminder_slug', 'reminder']
+        fields = ['task_id', 'username', 'date', 'slug', 'reminder_slug',
+                  'reminder']
 
 
 class UserUsernameSerializer(serializers.ModelSerializer):

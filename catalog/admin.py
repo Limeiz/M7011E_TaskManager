@@ -16,7 +16,8 @@ class ReminderAdmin(admin.ModelAdmin):
 @admin.register(List)
 class ListAdmin(admin.ModelAdmin):
     list_display = (
-    'list_id', 'list_name', 'assigned_users_display', 'assigned_tasks_display')
+        'list_id', 'list_name', 'assigned_users_display',
+        'assigned_tasks_display')
 
     def assigned_users_display(self, obj):
         return ', '.join([user.username for user in obj.assigned_users.all()])

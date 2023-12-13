@@ -80,7 +80,8 @@ class ListUserTestCase(APITestCase):
         self.assertFalse(
             List.objects.filter(list_name='Duplicate List').exists())
 
-    # doesn't work right now but maybe it should? feels like bad security otherwise
+    # doesn't work right now but maybe it should?
+    # feels like bad security otherwise
     def test_create_list_with_existing_slug_by_other_user(self):
         other_user = User.objects.create_user(username='otherUser',
                                               password='otherpass123')
