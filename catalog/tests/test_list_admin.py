@@ -59,7 +59,7 @@ class ListAdminTestCase(APITestCase):
             'assigned_tasks': self.task.task_id
         }
         response = self.client.post(reverse('list_admin_list'), data)
-        print(response.content) # don't understand why this doesn't work
+        print(response.content)  # don't understand why this doesn't work
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(List.objects.filter(slug='new-list').exists())
 

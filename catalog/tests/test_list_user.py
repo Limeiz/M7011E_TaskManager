@@ -67,7 +67,7 @@ class ListUserTestCase(APITestCase):
     def test_create_list_as_regular_user(self):
         data = {'list_name': 'New List', 'slug': 'new-list'}
         response = self.client.post(reverse('list_user_list'), data)
-        print(response.content) # same problem with all list create
+        print(response.content)  # same problem with all list create
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(List.objects.filter(slug='new-list').exists())
 

@@ -61,7 +61,7 @@ class ReminderAdminTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             Reminder.objects.get(slug=self.reminder.slug).date.isoformat(),
-            new_date+'+00:00')
+            new_date + '+00:00')
 
     def test_admin_delete_reminder(self):
         response = self.client.delete(
