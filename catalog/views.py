@@ -1,9 +1,12 @@
 from django.contrib.auth.models import User
-from rest_framework import viewsets, status, permissions, authentication, generics
+from rest_framework import viewsets, status, permissions, authentication, \
+    generics
 from rest_framework.response import Response
 
 from .models import Task, List, Reminder
-from .serializers import UserSerializer, TaskSerializer, ListSerializer, ReminderSerializer
+from .serializers import UserSerializer, TaskSerializer, ListSerializer, \
+    ReminderSerializer
+
 
 class IsAdmin(permissions.BasePermission):
     message = "You have to be an admin to view this content."
@@ -99,48 +102,64 @@ class UserViewSet(viewsets.ViewSet):
         request.user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class TaskViewSet(generics.GenericAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     authentication_classes = [authentication.TokenAuthentication]
 
+
 class TaskAdminListCreate(TaskViewSet, generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
 
-class TaskAdminGetUpdateDelete(TaskViewSet, generics.RetrieveUpdateDestroyAPIView):
+
+class TaskAdminGetUpdateDelete(TaskViewSet,
+                               generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
     lookup_field = 'slug'
 
+
 class TaskUserListCreate(TaskViewSet, generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsRegularUser]
+
     def get_queryset(self):
         return Task.objects.filter(assignee=self.request.user)
 
-class TaskUserGetUpdateDelete(TaskViewSet, generics.RetrieveUpdateDestroyAPIView):
+
+class TaskUserGetUpdateDelete(TaskViewSet,
+                              generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated, IsRegularUser]
     lookup_field = 'slug'
 
     def get_queryset(self):
         return Task.objects.filter(assignee=self.request.user)
+
 
 class ReminderViewSet(generics.GenericAPIView):
     queryset = Reminder.objects.all()
     serializer_class = ReminderSerializer
     authentication_classes = [authentication.TokenAuthentication]
 
+
 class ReminderAdminListCreate(ReminderViewSet, generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
 
-class ReminderAdminGetUpdateDelete(ReminderViewSet, generics.RetrieveUpdateDestroyAPIView):
+
+class ReminderAdminGetUpdateDelete(ReminderViewSet,
+                                   generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
     lookup_field = 'slug'
+
 
 class ReminderUserListCreate(ReminderViewSet, generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsRegularUser]
 
     def get_queryset(self):
         return Reminder.objects.filter(username=self.request.user)
-class ReminderUserGetUpdateDelete(ReminderViewSet, generics.RetrieveUpdateDestroyAPIView):
+
+
+class ReminderUserGetUpdateDelete(ReminderViewSet,
+                                  generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated, IsRegularUser]
     lookup_field = 'slug'
 
@@ -152,11 +171,17 @@ class ListViewSet(generics.GenericAPIView):
     queryset = List.objects.all()
     serializer_class = ListSerializer
     authentication_classes = [authentication.TokenAuthentication]
+
+
 class ListAdminListCreate(ListViewSet, generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
-class ListAdminGetUpdateDelete(ListViewSet, generics.RetrieveUpdateDestroyAPIView):
+
+
+class ListAdminGetUpdateDelete(ListViewSet,
+                               generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
     lookup_field = 'slug'
+
 
 class ListUserListCreate(ListViewSet, generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsRegularUser]
@@ -164,7 +189,9 @@ class ListUserListCreate(ListViewSet, generics.ListCreateAPIView):
     def get_queryset(self):
         return List.objects.filter(assigned_users=self.request.user)
 
-class ListUserGetUpdateDelete(ListViewSet, generics.RetrieveUpdateDestroyAPIView):
+
+class ListUserGetUpdateDelete(ListViewSet,
+                              generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated, IsRegularUser]
     lookup_field = 'slug'
 

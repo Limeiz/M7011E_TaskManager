@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from .models import Task, List, Reminder, Achievement
 
 
@@ -14,7 +15,8 @@ class ReminderAdmin(admin.ModelAdmin):
 
 @admin.register(List)
 class ListAdmin(admin.ModelAdmin):
-    list_display = ('list_id', 'list_name', 'assigned_users_display', 'assigned_tasks_display')
+    list_display = (
+    'list_id', 'list_name', 'assigned_users_display', 'assigned_tasks_display')
 
     def assigned_users_display(self, obj):
         return ', '.join([user.username for user in obj.assigned_users.all()])
@@ -22,7 +24,8 @@ class ListAdmin(admin.ModelAdmin):
     assigned_users_display.short_description = 'Assigned Users'
 
     def assigned_tasks_display(self, obj):
-        return ', '.join([f"{task.task_name}" for task in obj.assigned_tasks.all()])
+        return ', '.join(
+            [f"{task.task_name}" for task in obj.assigned_tasks.all()])
 
     assigned_tasks_display.short_description = 'Assigned Tasks'
 
