@@ -22,10 +22,16 @@ class TaskSerializer(serializers.ModelSerializer):
         lookup_field='slug'
     )
 
+    priority = serializers.CharField(source='get_priority',
+                                             read_only=True)
+
+    status = serializers.CharField(source='get_status',
+                                             read_only=True)
     class Meta:
         model = Task
         fields = ['task_name', 'description', 'file', 'priority', 'deadline',
                   'status', 'slug', 'task_slug', 'task', 'assignee']
+
 
 
 class ReminderSerializer(serializers.ModelSerializer):
