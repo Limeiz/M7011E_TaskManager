@@ -1,34 +1,22 @@
 # M7011E Task Manager
 
-Welcome to your personal task management system! This system allows you to manage your tasks, deadlines, and collaborate with others in shared groups.
+Welcome to your personal task management system! This system allows you to manage your tasks, deadlines, and collaborate with others with shared lists.
 
 ## Table of Contents
 
 - [Features](#features)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
+- [Installation](#installation)
 - [Usage](#usage)
-
 
 ## Features
 
 - Create, edit, and delete tasks
 - Set deadlines and reminders for tasks
-- Join and manage groups for collaborative task management
 - Customize task priorities
+- Complete tasks together with others
 - Earn achievements for completing tasks!
 
-## Getting Started
-
-### Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-- Python 3.11.0
-- Django
-
-### Installation
+## Installation
 
 1. Clone the repository:
    ```bash
