@@ -2,9 +2,10 @@ from datetime import datetime
 
 from django.contrib.auth.models import User, Group
 from django.urls import reverse
+from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase, APIClient
-from rest_framework import status
+
 from catalog.models import Reminder, Task
 
 
@@ -37,3 +38,50 @@ class ReminderAdminTestCase(APITestCase):
         response = self.client.get(
             reverse('reminder_admin_details', args=[str(self.reminder.slug)]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_admin_create_reminder(self):
+        date = datetime.now().isoformat()
+        data = {'task_id': self.task.task_id, 'username': self.admin_user.id,
+                'slug': 'new-reminder',
+                'date': date}
+        response = self.client.post(reverse('reminder_admin_list'), data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(Reminder.objects.filter(slug='new-reminder').exists())
+
+    def test_admin_get_reminder(self):
+        response = self.client.get(
+            reverse('reminder_admin_details', args=[str(self.reminder.slug)]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_admin_update_reminder(self):
+        new_date = datetime.now().isoformat()
+        response = self.client.patch(
+            reverse('reminder_admin_details', args=[str(self.reminder.slug)]),
+            {'date': new_date})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            Reminder.objects.get(slug=self.reminder.slug).date.isoformat(),
+            new_date + '+00:00')
+
+    def test_admin_delete_reminder(self):
+        response = self.client.delete(
+            reverse('reminder_admin_details', args=[str(self.reminder.slug)]))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(
+            Reminder.objects.filter(slug=self.reminder.slug).exists())
+
+    def test_admin_get_nonexistent_reminder(self):
+        response = self.client.get(
+            reverse('reminder_admin_details', args=['nonexistent-reminder']))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_admin_update_nonexistent_reminder(self):
+        response = self.client.patch(
+            reverse('reminder_admin_details', args=['nonexistent-reminder']),
+            {'date': '2023-12-31T23:59:59Z'})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_admin_delete_nonexistent_reminder(self):
+        response = self.client.delete(
+            reverse('reminder_admin_details', args=['nonexistent-reminder']))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

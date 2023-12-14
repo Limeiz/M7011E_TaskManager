@@ -3,6 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase, APIClient
+
 from catalog.models import Task
 
 
@@ -40,7 +41,8 @@ class TaskAdminTestCase(APITestCase):
     def test_get_secret_task(self):
         response = self.client.get(reverse('task_user_details', args=[
             str(self.other_users_task.slug)]))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
 
     def test_update_task(self):
         new_task_name = 'Updated Task'
@@ -55,7 +57,7 @@ class TaskAdminTestCase(APITestCase):
         response = self.client.patch(reverse('task_user_details', args=[
             str(self.other_users_task.slug)]),
                                      {'task_name': new_task_name})
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_task(self):
         response = self.client.delete(
@@ -66,6 +68,6 @@ class TaskAdminTestCase(APITestCase):
     def test_delete_secret_task(self):
         response = self.client.delete(reverse('task_user_details', args=[
             str(self.other_users_task.slug)]))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertTrue(
             Task.objects.filter(slug=self.other_users_task.slug).exists())

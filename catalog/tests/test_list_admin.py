@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User, Group
 from django.urls import reverse
+from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase, APIClient
-from rest_framework import status
+
 from catalog.models import Task, List
 
 
@@ -49,3 +50,32 @@ class ListAdminTestCase(APITestCase):
             reverse('list_admin_details', args=[str(self.list.slug)]))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(List.objects.filter(slug=self.list.slug).exists())
+
+    def test_create_list_as_admin(self):
+        data = {
+            'list_name': 'New List',
+            'slug': 'new-list',
+            'assigned_users': self.admin_user.id,
+            'assigned_tasks': self.task.task_id
+        }
+        response = self.client.post(reverse('list_admin_list'), data)
+        print(response.content)  # don't understand why this doesn't work
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(List.objects.filter(slug='new-list').exists())
+
+    def test_get_nonexistent_list_as_admin(self):
+        response = self.client.get(
+            reverse('list_admin_details', args=['nonexistent-slug']))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_nonexistent_list_as_admin(self):
+        response = self.client.patch(
+            reverse('list_admin_details', args=['nonexistent-slug']),
+            {'list_name': 'Updated List'})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_nonexistent_list_as_admin(self):
+        response = self.client.delete(
+            reverse('list_admin_details', args=['nonexistent-slug']))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
