@@ -41,7 +41,7 @@ class ReminderAdminTestCase(APITestCase):
 
     def test_admin_create_reminder(self):
         date = datetime.now().isoformat()
-        data = {'task_id': self.task.task_id, 'username': self.admin_user.id,
+        data = {'task_id': self.task.task_id, 'username': self.admin_user.username,
                 'slug': 'new-reminder',
                 'date': date}
         response = self.client.post(reverse('reminder_admin_list'), data)

@@ -49,7 +49,7 @@ class Reminder(models.Model):
     date = models.DateTimeField()
     task_id = models.ForeignKey(Task, to_field='task_id',
                                 on_delete=models.RESTRICT)
-    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    username = models.ForeignKey(User, to_field='username', on_delete=models.CASCADE)
     slug = models.SlugField(max_length=255,
                             unique=True,
                             blank=False,
