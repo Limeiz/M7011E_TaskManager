@@ -22,7 +22,8 @@ class Task(models.Model):
                             null=True,
                             blank=True)
     priority = models.CharField(max_length=1, choices=TASK_PRIORITY,
-                                blank=True, help_text='Task priority')
+                                blank=True, help_text='Task priority',
+                                default='m')
     deadline = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=1, choices=TASK_STATUS, default='t',
                               help_text='Task status')
@@ -45,6 +46,11 @@ class Task(models.Model):
 
     def get_status(self):
         return dict(Task.TASK_STATUS)[self.status]
+
+    def get_username(self):
+        if self.assignee:
+            return self.assignee.username
+        return None
 
     def __str__(self):
         return f"{self.task_name}"

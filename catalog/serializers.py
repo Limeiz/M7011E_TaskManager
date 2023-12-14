@@ -27,6 +27,8 @@ class TaskSerializer(serializers.ModelSerializer):
 
     status = serializers.CharField(source='get_status',
                                              read_only=True)
+    assignee = serializers.CharField(source='get_username',
+                                             read_only=True)
     class Meta:
         model = Task
         fields = ['task_name', 'description', 'file', 'priority', 'deadline',
