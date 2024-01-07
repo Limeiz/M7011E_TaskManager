@@ -1,7 +1,6 @@
 from django.urls import path
 
-from .views import (UserViewSet, UserAdminViewSet,
-                    TaskAdminListCreate, TaskAdminGetUpdateDelete,
+from .views import (TaskAdminListCreate, TaskAdminGetUpdateDelete,
                     TaskUserListCreate, TaskUserGetUpdateDelete,
                     ReminderAdminListCreate, ReminderUserListCreate,
                     ReminderUserGetUpdateDelete,
@@ -10,20 +9,6 @@ from .views import (UserViewSet, UserAdminViewSet,
                     ListUserGetUpdateDelete, ListUserListCreate, )
 
 urlpatterns = [
-    path('users', UserViewSet.as_view({
-        'get': 'retrieve',
-        'put': 'update',
-        'delete': 'destroy'
-    })),
-    path('usersadmin', UserAdminViewSet.as_view({
-        'get': 'list'
-    })),
-    path('usersadmin/<str:pk>', UserAdminViewSet.as_view({
-        'get': 'retrieve',
-        'put': 'update',
-        'delete': 'destroy'
-    })),
-
     path('tasks-admin', TaskAdminListCreate.as_view(), name='task_admin_list'),
     path('tasks-admin/<slug:slug>', TaskAdminGetUpdateDelete.as_view(),
          name='task_admin_details'),

@@ -1,10 +1,8 @@
-from django.contrib.auth.models import User
-from rest_framework import viewsets, status, permissions, authentication, \
+from rest_framework import permissions, authentication, \
     generics
-from rest_framework.response import Response
 
 from .models import Task, List, Reminder
-from .serializers import UserSerializer, TaskSerializer, ListSerializer, \
+from .serializers import TaskSerializer, ListSerializer, \
     ReminderSerializer
 
 
@@ -22,85 +20,6 @@ class IsRegularUser(permissions.BasePermission):
     def has_permission(self, request, view):
         group_name = "RegularUser"
         return request.user.groups.filter(name=group_name).exists()
-
-
-class CheckFunctions():
-    def get_all_user_tasks(self, user):
-        lists = List.objects.filter(assigned_users=user)
-        all_user_tasks = Task.objects.none()
-
-        for list_instance in lists:
-            user_tasks = list_instance.get_user_tasks(user)
-            all_user_tasks |= user_tasks
-
-        return all_user_tasks.order_by('task_id')
-
-    def user_has_task(self, user, task):
-        if task in CheckFunctions.get_all_user_tasks(self, user):
-            return True
-        else:
-            return False
-
-    def user_has_reminder(self, user, reminder_id):
-        reminder = Reminder.objects.get(reminder_id=reminder_id)
-        if reminder.username == user:
-            return True
-        else:
-            return False
-
-
-class UserAdminViewSet(viewsets.ViewSet):
-    authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated, IsAdmin]
-
-    def list(self, request):  # /api/users
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
-
-    def retrieve(self, request, pk=None):  # /api/users/<str:id>
-        user = User.objects.get(id=pk)
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
-
-    def update(self, request, pk=None):
-        user = User.objects.get(id=pk)
-        serializer = UserSerializer(instance=user, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-
-    def destroy(self, request, pk=None):
-        user = User.objects.get(id=pk)
-        user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class CreateUserViewSet(viewsets.ViewSet):
-    def create(self, request):
-        serializer = UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-class UserViewSet(viewsets.ViewSet):
-    authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
-
-    def retrieve(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data)
-
-    def update(self, request):
-        serializer = UserSerializer(instance=request.user, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-
-    def destroy(self, request):
-        request.user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class TaskViewSet(generics.GenericAPIView):
