@@ -22,7 +22,8 @@ class Task(models.Model):
                             null=True,
                             blank=True)
     priority = models.CharField(max_length=1, choices=TASK_PRIORITY,
-                                blank=True, help_text='Task priority')
+                                blank=True, help_text='Task priority',
+                                default='m')
     deadline = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=1, choices=TASK_STATUS, default='t',
                               help_text='Task status')
@@ -40,6 +41,17 @@ class Task(models.Model):
         self.file.delete()
         super().delete(*args, **kwargs)
 
+    def get_priority(self):
+        return dict(Task.TASK_PRIORITY)[self.priority]
+
+    def get_status(self):
+        return dict(Task.TASK_STATUS)[self.status]
+
+    def get_username(self):
+        if self.assignee:
+            return self.assignee.username
+        return None
+
     def __str__(self):
         return f"{self.task_name}"
 
@@ -49,7 +61,8 @@ class Reminder(models.Model):
     date = models.DateTimeField()
     task_id = models.ForeignKey(Task, to_field='task_id',
                                 on_delete=models.RESTRICT)
-    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    username = models.ForeignKey(User, to_field='username',
+                                 on_delete=models.CASCADE)
     slug = models.SlugField(max_length=255,
                             unique=True,
                             blank=False,
