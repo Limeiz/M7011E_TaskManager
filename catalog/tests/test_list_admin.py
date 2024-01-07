@@ -78,4 +78,3 @@ class ListAdminTestCase(APITestCase):
         response = self.client.delete(
             reverse('list_admin_details', args=['nonexistent-slug']))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-

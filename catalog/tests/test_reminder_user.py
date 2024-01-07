@@ -46,7 +46,6 @@ class ReminderRegularUserTestCase(APITestCase):
             slug='other-reminder',
             date=datetime.now())
 
-
         self.client.force_authenticate(user=self.reg_user)
 
     def test_regular_user_list_create(self):
@@ -83,4 +82,3 @@ class ReminderRegularUserTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertTrue(
             Reminder.objects.filter(slug='other-reminder').exists())
-

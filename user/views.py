@@ -3,7 +3,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 from django.contrib.auth.models import User
 
-from catalog.views import IsAdmin, IsRegularUser
+from catalog.views import IsAdmin
 from user.serializers import (
     UserSerializer,
     AuthTokenSerializer,

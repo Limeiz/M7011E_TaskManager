@@ -7,7 +7,6 @@ from rest_framework.test import APITestCase, APIClient
 from catalog.models import Task, List
 
 
-
 class ListUserTestCase(APITestCase):
     def setUp(self):
         self.client = APIClient()
@@ -73,8 +72,7 @@ class ListUserTestCase(APITestCase):
         self.assertTrue(List.objects.filter(slug='new-list').exists())
 
     def test_create_list_with_existing_slug_as_regular_user(self):
-        existing_list = List.objects.create(list_name='Existing List',
-                                            slug='existing-list')
+        List.objects.create(list_name='Existing List', slug='existing-list')
         data = {'list_name': 'Duplicate List', 'slug': 'existing-list'}
         response = self.client.post(reverse('list_user_list'), data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -91,8 +89,8 @@ class ListUserTestCase(APITestCase):
         self.client.credentials(
             HTTP_AUTHORIZATION=f'Token {other_user_token.key}')
 
-        existing_list = List.objects.create(list_name='Existing List',
-                                            slug='existing-list')
+        List.objects.create(list_name='Existing List',
+                            slug='existing-list')
 
         data = {'list_name': 'Duplicate List', 'slug': 'existing-list'}
         response = self.client.post(reverse('list_user_list'), data)
@@ -100,4 +98,3 @@ class ListUserTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(List.objects.filter(slug='existing-list',
                                             assigned_users=other_user).exists())
-
