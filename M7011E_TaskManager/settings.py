@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
+from django.conf.locale import pt
+from django.core.files.storage import storages
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -40,6 +43,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "drf_spectacular",
     "user",
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -128,3 +132,21 @@ SPECTACULAR_SETTINGS = {
     "COMPONENT_SPLIT_REQUEST": True,
     "SCHEMA_PATH_PREFIX": r"/api/v[0-9]",
 }
+
+AWS_ACCESS_KEY_ID = 'AKIA6ODU6THRI5E4QGP5'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'mycutelittlebucket'
+AWS_S3_REGION_NAME = 'eu-north-1'
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+# For serving static files directly from S3
+AWS_S3_URL_PROTOCOL = 'https'
+AWS_S3_USE_SSL = True
+AWS_S3_VERIFY = True
+
+# Static and media file configuration
+STATIC_URL = f'{AWS_S3_URL_PROTOCOL}://{AWS_S3_CUSTOM_DOMAIN}/static/'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+MEDIA_URL = f'{AWS_S3_URL_PROTOCOL}://{AWS_S3_CUSTOM_DOMAIN}/media/'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
